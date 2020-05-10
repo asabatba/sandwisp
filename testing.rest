@@ -1,0 +1,37 @@
+
+
+
+GET https://accounts.spotify.com/authorize?client_id=6b83a98aa53c4e599abf42ff87edc28b&response_type=token&redirect_uri=http://188.26.206.134:4000/&scope=playlist-read-private%20user-library-read HTTP/1.1
+
+###
+
+POST https://accounts.spotify.com/api/token
+Content-Type: application/x-www-form-urlencoded
+Authorization: Basic ???
+
+grant_type=client_credentials
+
+###
+
+GET https://api.spotify.com/v1/playlists/27v76MEXZa646A4cyomdYP/tracks
+Authorization: Bearer ???
+
+###
+
+GET https://api.spotify.com/v1/albums/504XSXhUJlzztcMV4YMaDV/tracks
+Authorization: Bearer ???
+
+###
+
+GET https://api.spotify.com/v1/audio-analysis/2eKrn8PG4Qak6yoItRC4sL
+Authorization: Bearer ???
+
+###
+
+GET https://api.spotify.com/v1/search?q=dragging a dead deer&type=album
+Authorization: Bearer BQBSwF23XwuREEXDewox5ayjSq8EH5yKEuxetRRPU4A1i7bOt9SbXfYGb73lXCwlFDfmd3u9jCr5tXQuRyc
+
+###
+
+GET https://api.spotify.com/v1/albums/2lKkwpMH6NDTM15QtLauB7
+Authorization: Bearer BQBSwF23XwuREEXDewox5ayjSq8EH5yKEuxetRRPU4A1i7bOt9SbXfYGb73lXCwlFDfmd3u9jCr5tXQuRyc

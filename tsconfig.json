@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "module": "UMD",
+        "noImplicitAny": true,
+        "target": "ES2017",
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        // "removeComments": true,
+        "outDir": "dist/",
+        "sourceMap": true
+    },
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "**/*.spec.ts"
+    ]
+}
