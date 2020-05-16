@@ -1,4 +1,4 @@
-const { build } = require('esbuild')
+const { build } = require('esbuild');
 
 const options = {
     stdio: 'inherit',
@@ -8,6 +8,6 @@ const options = {
     outfile: './dist/bundle.js',
     minify: true,
     bundle: true,
-}
+};
 
-build(options).catch(() => process.exit(1))
+build(options).catch(() => process.exit(1));

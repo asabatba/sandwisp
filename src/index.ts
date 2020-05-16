@@ -1,7 +1,7 @@
 
-import axios from "axios";
-import { config } from "dotenv";
-import { Client } from "pg";
+import axios from 'axios';
+import { config } from 'dotenv';
+import { Client } from 'pg';
 config();
 
 
@@ -63,7 +63,7 @@ async function checkExistingAudioFeatures() {
 
 // checkExistingAudioFeatures();
 
-const insertJsonFormat = (obj) => JSON.stringify(obj).replace(/'/g, "''");
+const insertJsonFormat = (obj) => JSON.stringify(obj).replace(/'/g, '\'\'');
 
 async function test() {
 
@@ -89,7 +89,7 @@ async function afeatures() {
     await client.connect();
     const spoti = new SpotifyClient();
     await spoti.connect();
-    const ids = ["2eKrn8PG4Qak6yoItRC4sL", "66SPXY48GHqvedbRT7jBey", "01TyFEZu6mHbffsVfxgrFn", "0NyE3z63bQpiqDkx6DSjl0", "0A8P76W8MXeulFGIHNWSG1", "716OZGLBg3vkNfMTpfbYm6", "67iCfFQL1SWgjPKo24SlCr", "7zJe81f6l3pHwpUGSQj3HY", "392fECmnYZTQjL97hqEElg", "4z17lasP9rNazlyeegw5J6", "5cY6iwmzNfroYMCuLOlJio", "0HIk8Bo0yu6bwaDQxk5wWp", "55pG7x7OMhuokLDyqmgFBw", "2TiTcWEs1CldfTx7fOGfS4", "4ts3OSGKwYLwheyZme9mbh", "6o2ZPDOBPJypL5wa7hgqlC", "1RI9Qpt8QbYtwfCW8npcO1", "1r6jgeo9QiOVdqhWG8XPy5", "1XiPbxVSCgMLO0QsUPazBt", "4T7okh1A7MmqS7xXypO0wx", "1EQuf1dflSSt3HfUNIOzDM", "27MNsCvgxqdBE2CICEXkrY", "7zRw1eddw1Jb2HMS7dZ28b", "6Cb6cDEIKJQHUWD2xYLx00", "7pHz9U4AZVAQXjs6ik0duH", "0FX1q46YjBPYd6PQlBRcwj", "14Ogmyyyb77rupsRw318ay", "2JQ9wMmURQMY5ysth04rHO", "13YxuRQZdU7snOfDI3nft2", "3MVL733KX2m9G76qPnTttk", "3Jirvz8n8qv015ewSt3VKg", "3A4JYHXVpMWAsGqFWcZ8WO", "1vTrE6ltaxo9X2iYYFhovs", "3hrr00VycUcp9S0R2ojBFq", "4m32ZYmSYgGziMwx3cJxS7"];
+    const ids = ['2eKrn8PG4Qak6yoItRC4sL', '66SPXY48GHqvedbRT7jBey', '01TyFEZu6mHbffsVfxgrFn', '0NyE3z63bQpiqDkx6DSjl0', '0A8P76W8MXeulFGIHNWSG1', '716OZGLBg3vkNfMTpfbYm6', '67iCfFQL1SWgjPKo24SlCr', '7zJe81f6l3pHwpUGSQj3HY', '392fECmnYZTQjL97hqEElg', '4z17lasP9rNazlyeegw5J6', '5cY6iwmzNfroYMCuLOlJio', '0HIk8Bo0yu6bwaDQxk5wWp', '55pG7x7OMhuokLDyqmgFBw', '2TiTcWEs1CldfTx7fOGfS4', '4ts3OSGKwYLwheyZme9mbh', '6o2ZPDOBPJypL5wa7hgqlC', '1RI9Qpt8QbYtwfCW8npcO1', '1r6jgeo9QiOVdqhWG8XPy5', '1XiPbxVSCgMLO0QsUPazBt', '4T7okh1A7MmqS7xXypO0wx', '1EQuf1dflSSt3HfUNIOzDM', '27MNsCvgxqdBE2CICEXkrY', '7zRw1eddw1Jb2HMS7dZ28b', '6Cb6cDEIKJQHUWD2xYLx00', '7pHz9U4AZVAQXjs6ik0duH', '0FX1q46YjBPYd6PQlBRcwj', '14Ogmyyyb77rupsRw318ay', '2JQ9wMmURQMY5ysth04rHO', '13YxuRQZdU7snOfDI3nft2', '3MVL733KX2m9G76qPnTttk', '3Jirvz8n8qv015ewSt3VKg', '3A4JYHXVpMWAsGqFWcZ8WO', '1vTrE6ltaxo9X2iYYFhovs', '3hrr00VycUcp9S0R2ojBFq', '4m32ZYmSYgGziMwx3cJxS7'];
 
     const res = await spoti.getAudioFeatures(ids);
 
@@ -151,7 +151,7 @@ export class SpotifyClient {
 
     async connect() {
         const response = await axios.post(`${this.accountsUrl}/api/token`,
-            `grant_type=client_credentials`
+            'grant_type=client_credentials'
             , {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -371,7 +371,7 @@ export async function loadAlbum(pgClient: Client, aid: string) {
     const tracksToRetrieve = albumTrackIds; // = playlistTrackIds.filter(id => 
     const tidsInsert = albumTracks.map(t => `('${aid}','${t.id}','${t.disc_number}','${t.track_number}')`).join(',');
 
-    pgClient.query(`insert into sandwisp.album_tracks (id, track_id, disc_number, track_number) values${tidsInsert}`)
+    pgClient.query(`insert into sandwisp.album_tracks (id, track_id, disc_number, track_number) values${tidsInsert}`);
 
 
     await loadTrackData(pgClient, spoti, tracksToRetrieve,);
