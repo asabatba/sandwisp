@@ -2,7 +2,7 @@
 import pool from './index';
 
 
-export async function albumTracksInDatabase(albumId: string) {
+export async function albumTrackIdsInDatabase(albumId: string) {
 
     if (!albumId) throw new Error('albumId is null?');
     const results = (await pool.query('select track_id from album_tracks where id = $1',

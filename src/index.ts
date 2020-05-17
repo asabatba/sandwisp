@@ -111,12 +111,6 @@ function* chunk(allItems, maxItemsPerYield) {
 
 
 
-export async function searchAlbum(query: string) {
-    const spoti = new SpotifyClient();
-    await spoti.connect();
-    return spoti.searchAlbum(query);
-}
-
 
 async function loadPlaylist(pid: string) {
     await client.connect();

@@ -1,7 +1,6 @@
 
 
-import pool from '../db';
-import { albumTracksInDatabase, insertAlbumTracks, loadAudioAnalysisSectionsOfAlbum } from '../db/albums';
+import { albumTrackIdsInDatabase, insertAlbumTracks, loadAudioAnalysisSectionsOfAlbum } from '../db/albums';
 import { insertTrackAudioAnalysis, insertTrackAudioFeatures, insertTrackInfo } from '../db/tracks';
 import { SpotifyClient } from '../spotify/client';
 
@@ -18,7 +17,7 @@ export async function loadAlbum(aid: string) {
         console.error(err);
         throw new Error(`Error fetching album tracks ${err}`);
     }
-    const existingTracks = await albumTracksInDatabase(aid);
+    const existingTracks = await albumTrackIdsInDatabase(aid);
 
     const albumTrackIds = albumTracks.map(t => t.id);
     const databaseHit = albumTrackIds.every((id) => existingTracks.includes(id));
