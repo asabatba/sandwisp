@@ -129,10 +129,14 @@ export class SpotifyClient {
         return response.data;
     }
 
-    async getPlaylistTracks(playlistId: string) {
+
+    async getPlaylistTracks(playlistId: string, fields?: string) {
+
+        // att: [fields] has to contain 'next' and 'items.track.type' if it exists
         const allItems = [];
         let response = await axios.get(`${this.apiUrl}/v1/playlists/${playlistId}/tracks`, {
             headers: { 'Authorization': `Bearer ${this.accessToken}` },
+            params: fields ? { fields: fields } : undefined
         });
         allItems.push(...response.data.items);
 

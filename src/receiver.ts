@@ -7,6 +7,7 @@ import { readFileSync } from 'fs';
 import https from 'https';
 import { API_PORT } from './config';
 import albumsRouter from './controllers/albums';
+import playlistsRouter from './controllers/playlist';
 import searchRouter from './controllers/search';
 
 const app = express();
@@ -22,6 +23,7 @@ app.use(cors());
 app.use(speedLimiter);
 
 app.use('/api/albums', albumsRouter);
+app.use('/api/playlists', playlistsRouter);
 app.use('/api/search', searchRouter);
 
 (() => {

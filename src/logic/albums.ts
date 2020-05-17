@@ -1,9 +1,8 @@
 
 
 import { albumTrackIdsInDatabase, insertAlbumTracks, loadAudioAnalysisSectionsOfAlbum } from '../db/albums';
-import { insertTrackAudioAnalysis, insertTrackAudioFeatures, insertTrackInfo } from '../db/tracks';
 import { SpotifyClient } from '../spotify/client';
-
+import { retrieveAndSaveAllTracksToDatabase } from './tracks';
 
 
 export async function loadAlbum(aid: string) {
@@ -33,32 +32,7 @@ export async function loadAlbum(aid: string) {
 
     await insertAlbumTracks(aid, albumTracks);
 
-    // await loadTrackData(pgClient, spoti, tracksToRetrieve);
-
-    const allTracks = await spoti.getAllTracks(albumTrackIds);
-    const allAudioFeatures = await spoti.getAllAudioFeatures(albumTrackIds);
-    console.log(allTracks);
-    // add things to db
-    for (let i = 0; i < allTracks.length; i++) {
-        const track = allTracks[i];
-        const audioFeatures = allAudioFeatures[i];
-        const audioAnalysis = await spoti.getTrackAnalysis(track.id);
-        try {
-            await insertTrackInfo(track.id, track);
-        } catch (err) {
-            console.error('Error on track_info insert.', err);
-        }
-        try {
-            await insertTrackAudioFeatures(track.id, audioFeatures);
-        } catch (err) {
-            console.error('Error on audio_features insert.', err);
-        }
-        try {
-            await insertTrackAudioAnalysis(track.id, audioAnalysis);
-        } catch (err) {
-            console.error('Error on audio_analysis insert.', err);
-        }
-    }
+    await retrieveAndSaveAllTracksToDatabase(albumTrackIds);
 }
 
 export const loadAlbumSections = (aid: string) => loadAudioAnalysisSectionsOfAlbum(aid);
