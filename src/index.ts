@@ -1,36 +1,11 @@
 
 import axios from 'axios';
-import { config } from 'dotenv';
+
 import { Client } from 'pg';
-config();
+import config from './config';
 
 
-const client = new Client({
-    host: process.env.POSTGRES_HOST,
-    port: parseInt(process.env.POSTGRES_PORT),
-    database: process.env.POSTGRES_DATABASE,
-    user: process.env.POSTGRES_USER,
-    password: process.env.POSTGRES_PASSWORD,
-});
-
-class QueryHelper {
-
-    static addTrackInfo(id: string, data) {
-        return `insert into sandwisp.track_info (id,data) values ('${id}','${insertJsonFormat(data)}')`;
-    }
-
-    static addTrackAudioFeatures(id: string, data) {
-        return `insert into sandwisp.audio_features (id,data) values ('${id}','${insertJsonFormat(data)}')`;
-    }
-
-    static addAudioAnalysis(id: string, data) {
-        return `insert into sandwisp.audio_analysis (id,meta,track,bars,beats,sections,segments,tatums) values ('${id}','${insertJsonFormat(data.meta)}','${insertJsonFormat(data.track)}','${insertJsonFormat(data.bars)}','${insertJsonFormat(data.beats)}','${insertJsonFormat(data.sections)}','${insertJsonFormat(data.segments)}','${insertJsonFormat(data.tatums)}')`;
-    }
-
-    static tracksInDatabase() {
-        return `select id from sandwisp.track_info`;
-    }
-}
+const client = new Client();
 
 
 async function checkExistingAudioFeatures() {
@@ -39,7 +14,7 @@ async function checkExistingAudioFeatures() {
     const qRes = await client.query('select id from sandwisp.audio_features where data is not null;');
     const rows = qRes.rows;
     const existingIds = (await client.query('select id from sandwisp.track_info where data is not null;')).rows.map(o => o.id);
-    const groups = arraySplitter(rows.map(r => r.id), 50);
+    const groups = chunk(rows.map(r => r.id), 50);
     const spoti = new SpotifyClient();
     await spoti.connect();
     for (const ids of groups) {
@@ -115,7 +90,7 @@ async function authflow() {
     const tracks = await spoti.getUserTracks();
     // console.log(`Tracks: ${tracks.map(i => i.track.name).join(', ')}`);
     // untested
-    const splitter = arraySplitter(tracks.map(t => t.track.id), 100);
+    const splitter = chunk(tracks.map(t => t.track.id), 100);
     for (const trackIds of splitter) {
         const res = await spoti.getAudioFeatures(trackIds);
         for (const features of res.audio_features) {
@@ -126,217 +101,15 @@ async function authflow() {
     await client.end();
 }
 
-function* arraySplitter(allItems, maxItemsPerYield) {
+
+function* chunk(allItems, maxItemsPerYield) {
     const groups = Math.ceil(allItems.length / maxItemsPerYield);
     for (let i = 0; i < groups; i++) {
         yield allItems.slice(i * maxItemsPerYield, (i + 1) * maxItemsPerYield);
     }
 }
 
-// test();
 
-
-export class SpotifyClient {
-
-    accountsUrl = 'https://accounts.spotify.com';
-    apiUrl = 'https://api.spotify.com';
-    clientId = process.env.SPOTIFY_CLIENT_ID;
-    userToken = 'userTokenHere';
-    appAuth = process.env.SPOTIFY_CLIENT_CREDS;
-    accessToken: string;
-
-    constructor() {
-
-    }
-
-    async connect() {
-        const response = await axios.post(`${this.accountsUrl}/api/token`,
-            'grant_type=client_credentials'
-            , {
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': `Basic ${this.appAuth}`
-                }
-            });
-        this.accessToken = response.data.access_token;
-    }
-
-    async authorize() {
-        const response = await axios.get(`${this.accountsUrl}/authorize`, {
-            params: {
-                client_id: this.clientId,
-                response_type: 'token',
-                redirect_uri: 'https://arsaba.dev/',
-                scope: 'playlist-read-private',
-            }
-        });
-    }
-
-    async getTracks(idList: string[]) {
-        const response = await axios.get(`${this.apiUrl}/v1/tracks`, {
-            headers: { 'Authorization': `Bearer ${this.accessToken}` },
-            params: { ids: idList.join(',') }
-        });
-        return response.data;
-    }
-
-    async getTrackAnalysis(id: string) {
-        const response = await axios.get(`${this.apiUrl}/v1/audio-analysis/${id}`,
-            {
-                headers: {
-                    'Authorization': `Bearer ${this.accessToken}`
-                }
-            }
-        );
-        // console.log(response.data);
-        return response.data;
-    }
-
-    // idList max length = 100
-    async getAudioFeatures(idList: string[]) {
-        const response = await axios.get(`${this.apiUrl}/v1/audio-features`,
-            {
-                headers: {
-                    'Authorization': `Bearer ${this.accessToken}`
-                },
-                params: {
-                    ids: idList.join(','),
-                },
-            }
-        );
-        return response.data;
-    }
-
-    // https://api.spotify.com/v1/me/playlists
-    async getUserPlaylists() {
-        const response = await axios.get(`${this.apiUrl}/v1/me/playlists`, {
-            headers: {
-                'Authorization': `Bearer ${this.userToken}`
-            }
-        });
-        return response.data;
-    }
-
-    async getUserTracks() {
-        const allItems = [];
-        let response = await axios.get(`${this.apiUrl}/v1/me/tracks`, {
-            headers: { 'Authorization': `Bearer ${this.userToken}` },
-            query: { limit: 50 }
-        });
-        allItems.push(...response.data.items);
-
-        while (response.data.next) {
-            response = await axios.get(response.data.next, {
-                headers: { 'Authorization': `Bearer ${this.userToken}` }
-            });
-            allItems.push(...response.data.items);
-        }
-        return allItems;
-    }
-
-    async getPlaylist(playlistId: string) {
-        const response = await axios.get(`${this.apiUrl}/v1/playlists/${playlistId}`, {
-            headers: { 'Authorization': `Bearer ${this.accessToken}` },
-        });
-        return response.data;
-    }
-
-    async getPlaylistTracks(playlistId: string) {
-        const allItems = [];
-        let response = await axios.get(`${this.apiUrl}/v1/playlists/${playlistId}/tracks`, {
-            headers: { 'Authorization': `Bearer ${this.accessToken}` },
-        });
-        allItems.push(...response.data.items);
-
-        while (response.data.next) {
-            response = await axios.get(response.data.next, {
-                headers: { 'Authorization': `Bearer ${this.accessToken}` }
-            });
-            allItems.push(...response.data.items);
-        }
-        return allItems.filter(t => t.track.type === 'track');
-    }
-
-    async getAlbumTracks(albumId: string) {
-        const allItems = [];
-        let response = await axios.get(`${this.apiUrl}/v1/albums/${albumId}/tracks`, {
-            headers: { 'Authorization': `Bearer ${this.accessToken}` },
-        });
-        allItems.push(...response.data.items);
-
-        while (response.data.next) {
-            response = await axios.get(response.data.next, {
-                headers: { 'Authorization': `Bearer ${this.accessToken}` }
-            });
-            allItems.push(...response.data.items);
-        }
-        return allItems.filter(t => t.type === 'track');
-    }
-
-    async search(q: string, types: SpotifyObjectType[], limit: number) {
-
-        let response = await axios.get(`${this.apiUrl}/v1/search`,
-            {
-                params: {
-                    q: q,
-                    type: types.join(','),
-                    limit: limit
-                },
-                headers: { 'Authorization': `Bearer ${this.accessToken}` },
-            });
-
-        return response.data;
-    }
-
-    async searchAlbum(q: string) {
-        const searchResults = await this.search(q, ['album'], 50);
-        return searchResults.albums.items;
-    }
-}
-
-type SpotifyObjectType = 'album' | 'artist' | 'playlist' | 'track' | 'show' | 'episode';
-
-// authflow();
-
-async function loadTrackData(pgClient: Client, spotifyClient: SpotifyClient, tracksToRetrieve: string[]) {
-    for (const group of arraySplitter(tracksToRetrieve, 50)) {
-
-        let tracks;
-        try {
-            tracks = (await spotifyClient.getTracks(group)).tracks;
-        } catch (err) {
-            throw new Error('Error fetching tracks.');
-        }
-
-        const aufes = (await spotifyClient.getAudioFeatures(group)).audio_features;
-        for (const tr of tracks) {
-            try {
-                await pgClient.query(QueryHelper.addTrackInfo(tr.id, tr));
-            } catch (err) {
-                console.error(err);
-            }
-            try {
-                await pgClient.query(QueryHelper.addTrackAudioFeatures(tr.id, aufes.find(t => t.id === tr.id)));
-            } catch (err) {
-                console.error(err);
-            }
-            try {
-                const analysis = await spotifyClient.getTrackAnalysis(tr.id);
-                await pgClient.query(QueryHelper.addAudioAnalysis(tr.id, analysis));
-            } catch (err) {
-                console.error(err);
-            }
-        }
-    }
-}
-
-async function albumTracksInDatabase(pgClient: Client, aid: string): Promise<string[]> {
-
-    const results = (await pgClient.query(`
- select track_id from album_tracks at2 where id = '${aid}';
-    `)).rows;
-    return results.map(r => r.track_id);
-}
 
 export async function searchAlbum(query: string) {
     const spoti = new SpotifyClient();
@@ -344,40 +117,6 @@ export async function searchAlbum(query: string) {
     return spoti.searchAlbum(query);
 }
 
-export async function loadAlbum(pgClient: Client, aid: string) {
-    // await client.connect();
-
-    const spoti = new SpotifyClient();
-    await spoti.connect();
-    let albumTracks;
-    try {
-        albumTracks = (await spoti.getAlbumTracks(aid));
-    } catch (err) {
-        console.error(err);
-        throw new Error(`Error fetching album tracks ${err}`);
-    }
-    const existingTracks = await albumTracksInDatabase(pgClient, aid);
-
-    const albumTrackIds = albumTracks.map(t => t.id);
-    const databaseHit = albumTrackIds.every((id) => existingTracks.includes(id));
-
-    if (databaseHit) {
-        console.log(`database hit for album ${aid}`);
-        return;
-    }
-
-    console.log(albumTrackIds.join('; '));
-
-    const tracksToRetrieve = albumTrackIds; // = playlistTrackIds.filter(id => 
-    const tidsInsert = albumTracks.map(t => `('${aid}','${t.id}','${t.disc_number}','${t.track_number}')`).join(',');
-
-    pgClient.query(`insert into sandwisp.album_tracks (id, track_id, disc_number, track_number) values${tidsInsert}`);
-
-
-    await loadTrackData(pgClient, spoti, tracksToRetrieve,);
-
-    // await client.end();
-}
 
 async function loadPlaylist(pid: string) {
     await client.connect();
@@ -394,7 +133,7 @@ async function loadPlaylist(pid: string) {
 
     const tracksToRetrieve = playlistTrackIds; // = playlistTrackIds.filter(id => !existingTracks.includes(id));
 
-    for (const group of arraySplitter(tracksToRetrieve, 50)) {
+    for (const group of chunk(tracksToRetrieve, 50)) {
         const tracks = (await spoti.getTracks(group)).tracks;
         const aufes = (await spoti.getAudioFeatures(group)).audio_features;
         for (const tr of tracks) {
@@ -442,5 +181,3 @@ async function analyseTracks() {
     await client.end();
 }
 
-// analyseTracks();
-// loadAlbum('7mQSfTIli4awcQj1w1Fbou');
