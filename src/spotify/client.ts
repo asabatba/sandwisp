@@ -180,6 +180,11 @@ export class SpotifyClient {
         const searchResults = await this.search(q, ['album'], 50);
         return searchResults.albums.items;
     }
+
+    async searchPlaylist(q: string) {
+        const searchResults = await this.search(q, ['playlist'], 50);
+        return searchResults.playlists.items;
+    }
 }
 
 type SpotifyObjectType = 'album' | 'artist' | 'playlist' | 'track' | 'show' | 'episode';

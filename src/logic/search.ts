@@ -9,3 +9,10 @@ export async function searchAlbum(query: string) {
     await spoti.connect();
     return spoti.searchAlbum(query);
 }
+
+export async function searchPlaylist(query: string) {
+
+    const spoti = new SpotifyClient();
+    await spoti.connect();
+    return spoti.searchPlaylist(query);
+}
