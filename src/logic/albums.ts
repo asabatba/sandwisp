@@ -36,3 +36,10 @@ export async function loadAlbum(aid: string) {
 }
 
 export const loadAlbumSections = (aid: string) => loadAudioAnalysisSectionsOfAlbum(aid);
+
+export const getAlbumData = async (aid: string) => {
+    const spoti = new SpotifyClient();
+    await spoti.connect();
+    const album = await spoti.getAlbum(aid);
+    return album;
+};

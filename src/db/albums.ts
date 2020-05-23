@@ -68,3 +68,8 @@ join (
     return q.rows;
 }
 
+// get album_info?
+// export async function getAlbumData(albumId: string) {
+
+//     await pool.query(`select a.data from `);
+// }

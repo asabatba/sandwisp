@@ -1,11 +1,22 @@
 
 import { NextFunction, Request, Response, Router } from 'express';
-import { loadAlbum, loadAlbumSections } from '../logic/albums';
+import { loadAlbum, loadAlbumSections, getAlbumData } from '../logic/albums';
 
 
 const albumsRouter = Router();
 
+albumsRouter.get('/:aid', getAlbum);
 albumsRouter.get('/:aid/sections', getAlbumSections);
+
+async function getAlbum(req: Request, res: Response, next: NextFunction) {
+    const aid = req.params['aid']?.replace(/[\W]+/g, '');
+
+    if (!aid) {
+        return res.status(400).send({ error: 'Missing/null albumId' });
+    }
+    const data = await getAlbumData(aid);
+    return res.status(200).send(data);
+}
 
 async function getAlbumSections(req: Request, res: Response, next: NextFunction) {
 

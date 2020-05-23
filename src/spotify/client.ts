@@ -149,6 +149,14 @@ export class SpotifyClient {
         return allItems.filter(t => t.track.type === 'track');
     }
 
+    async getAlbum(albumId: string) {
+        const response = await axios.get(`${this.apiUrl}/v1/albums/${albumId}`, {
+            headers: { 'Authorization': `Bearer ${this.accessToken}` },
+        });
+
+        return response.data;
+    }
+
     async getAlbumTracks(albumId: string) {
         const allItems = [];
         let response = await axios.get(`${this.apiUrl}/v1/albums/${albumId}/tracks`, {
