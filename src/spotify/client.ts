@@ -129,7 +129,6 @@ export class SpotifyClient {
         return response.data;
     }
 
-
     async getPlaylistTracks(playlistId: string, fields?: string) {
 
         // att: [fields] has to contain 'next' and 'items.track.type' if it exists
@@ -142,11 +141,16 @@ export class SpotifyClient {
 
         while (response.data.next) {
             response = await axios.get(response.data.next, {
-                headers: { 'Authorization': `Bearer ${this.accessToken}` }
+                headers: { 'Authorization': `Bearer ${this.accessToken}` },
+                params: fields ? { fields: fields } : undefined
             });
             allItems.push(...response.data.items);
         }
-        return allItems.filter(t => t.track.type === 'track');
+
+        /**
+         * Filter non-tracks and local tracks.
+         */
+        return allItems.filter(t => t.track.type === 'track' && !t.track.is_local);
     }
 
     async getAlbum(albumId: string) {
@@ -175,7 +179,7 @@ export class SpotifyClient {
 
     async search(q: string, types: SpotifyObjectType[], limit: number) {
 
-        let response = await axios.get(`${this.apiUrl}/v1/search`,
+        const response = await axios.get(`${this.apiUrl}/v1/search`,
             {
                 params: {
                     q: q,

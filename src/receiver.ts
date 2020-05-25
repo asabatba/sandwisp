@@ -43,6 +43,7 @@ app.use('/api/search', searchRouter);
     httpsServer.listen(API_PORT);
 })();
 
+// big TODO
 const errorHandler = (error: Error | AxiosError, request: Request, response: Response, next: NextFunction) => {
 
     console.error(error);

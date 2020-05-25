@@ -20,12 +20,12 @@ export async function checkIfTrackInDatabase(trackId: string) {
 
 export async function insertTrackInfo(trackId: string, data: any) {
 
-    await pool.query('insert into sandwisp.track_info (id,data) values ($1,$2) on conflict do nothing', [trackId, JSON.stringify(data)]);
+    await pool.query('insert into sandwisp.track_info (id,data) values ($1,$2) on conflict  (id) do update set data = excluded.data', [trackId, JSON.stringify(data)]);
 }
 
 export async function insertTrackAudioFeatures(trackId: string, data: any) {
 
-    await pool.query('insert into sandwisp.audio_features (id,data) values ($1,$2) on conflict do nothing', [trackId, JSON.stringify(data)]);
+    await pool.query('insert into sandwisp.audio_features (id,data) values ($1,$2) on conflict (id) do update set data = excluded.data', [trackId, JSON.stringify(data)]);
 }
 
 export async function insertTrackAudioAnalysis(trackId: string, data: any) {
