@@ -1,6 +1,6 @@
 
 import { NextFunction, Request, Response, Router } from 'express';
-import { loadAlbum, loadAlbumSections, getAlbumData } from '../logic/albums';
+import { getAlbumData, loadAlbum, loadAlbumSections } from '../logic/albums';
 
 
 const albumsRouter = Router();

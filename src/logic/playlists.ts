@@ -22,7 +22,7 @@ export async function loadPlaylist(pid: string) {
     }
     const existingTracks = await playlistTrackIdsInDatabase(pid);
 
-    console.log(playlistTracks.slice(0,5), existingTracks.slice(0,5));
+    console.log(playlistTracks.slice(0, 5), existingTracks.slice(0, 5));
 
     const playlistTrackIds = playlistTracks.map(t => t.track.id);
     console.warn(playlistTracks.filter(ptr => ptr.track.id == null));

@@ -1,7 +1,9 @@
 
 
 import { albumTrackIdsInDatabase, insertAlbumTracks, loadAudioAnalysisSectionsOfAlbum } from '../db/albums';
+import { getColorsOf } from '../db/colors';
 import { SpotifyClient } from '../spotify/client';
+import { retrieveAndSaveColors } from './colors';
 import { retrieveAndSaveAllTracksToDatabase } from './tracks';
 
 
@@ -31,7 +33,6 @@ export async function loadAlbum(aid: string) {
     // const tracksToRetrieve = albumTrackIds;
 
     await insertAlbumTracks(aid, albumTracks);
-
     await retrieveAndSaveAllTracksToDatabase(albumTrackIds);
 }
 
@@ -41,5 +42,15 @@ export const getAlbumData = async (aid: string) => {
     const spoti = new SpotifyClient();
     await spoti.connect();
     const album = await spoti.getAlbum(aid);
-    return album;
+
+    let albumColors = await getColorsOf('album', aid);
+
+    if (!albumColors) {
+
+        const smallestImgUrl = album.images.reduce((acc: { height: number }, img: { height: number }) => img.height < acc.height ? img : acc, { height: Infinity }).url;
+        console.log(smallestImgUrl);
+        albumColors = await retrieveAndSaveColors('album', aid, smallestImgUrl);
+    }
+
+    return { ...album, colors: albumColors };
 };

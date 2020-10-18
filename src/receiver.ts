@@ -5,10 +5,12 @@ import express, { NextFunction, Request, Response } from 'express';
 import slowDown from 'express-slow-down';
 import { readFileSync } from 'fs';
 import https from 'https';
+import http from 'http';
 import { API_PORT } from './config';
 import albumsRouter from './controllers/albums';
 import playlistsRouter from './controllers/playlist';
 import searchRouter from './controllers/search';
+import colorsRouter from './controllers/colors';
 
 const app = express();
 
@@ -25,6 +27,7 @@ app.use(speedLimiter);
 app.use('/api/albums', albumsRouter);
 app.use('/api/playlists', playlistsRouter);
 app.use('/api/search', searchRouter);
+app.use('/api/colors', colorsRouter);
 
 (() => {
     let key, cert;
@@ -36,11 +39,17 @@ app.use('/api/search', searchRouter);
         return;
     }
 
-    const httpsServer = https.createServer({
-        key: key,
-        cert: cert
-    }, app);
-    httpsServer.listen(API_PORT);
+    // const httpsServer = https.createServer({
+    //     key: key,
+    //     cert: cert
+    // }, app);
+    // httpsServer.listen(API_PORT);
+
+    const httpServer = http.createServer(app);
+    httpServer.listen(API_PORT);
+
+    console.log(`Listening on port ${API_PORT}`);
+
 })();
 
 // big TODO

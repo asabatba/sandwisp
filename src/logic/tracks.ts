@@ -14,7 +14,7 @@ export async function retrieveAndSaveAllTracksToDatabase(trackIds: string[]) {
 
     // add things to db
     for (let i = 0; i < allTracks.length; i++) {
-        console.log(i+'/'+allTracks.length);
+        console.log(i + '/' + allTracks.length);
         const track = allTracks[i];
         const audioFeatures = allAudioFeatures[i];
         const audioAnalysis = await spoti.getTrackAnalysis(track.id);
