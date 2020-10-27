@@ -27,21 +27,13 @@ app.use('/api/playlists', playlistsRouter);
 app.use('/api/search', searchRouter);
 app.use('/api/colors', colorsRouter);
 
+
 (() => {
-    // let key, cert;
-    // try {
-    //     key = readFileSync(process.env.SERVER_KEY, 'utf8');
-    //     cert = readFileSync(process.env.SERVER_CERT, 'utf8');
-    // } catch (err) {
-    //     console.error(err);
-    //     return;
-    // }
 
     const httpServer = http.createServer(app);
     httpServer.listen(API_PORT);
 
     console.log(`Listening on port ${API_PORT}`);
-
 })();
 
 // big TODO

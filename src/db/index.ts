@@ -1,14 +1,16 @@
 
+import Knex from 'knex';
+import { DB_CLIENT, DB_DATABASE, DB_PASSWORD, DB_USER } from '../config';
 
-import { Pool } from 'pg';
-
-const pool = new Pool();
-
-// export const query =
-//     async (text: string, values?: any, callback?: (err: Error, result: QueryResult<any>) => void) => {
-//         return pool.query(text, values, callback);
-//     };
-
-// export const query = pool.query;
-
-export default pool;
+export default Knex({
+    client: DB_CLIENT,
+    connection: {
+        database: DB_DATABASE,
+        user: DB_USER,
+        password: DB_PASSWORD,
+    },
+    pool: {
+        min: 2,
+        max: 10
+    },
+});
