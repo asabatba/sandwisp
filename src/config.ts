@@ -6,11 +6,13 @@ export const API_PORT = process.env.SERVER_API_PORT;
 export const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 export const SPOTIFY_CLIENT_KEY = process.env.SPOTIFY_CLIENT_KEY;
 
-export const {
-    DB_CLIENT,
-    DB_DATABASE,
-    DB_USER,
-    DB_PASSWORD,
-} = process.env;
+// export const {
+//     DB_CLIENT,
+//     DB_DATABASE,
+//     DB_USER,
+//     DB_PASSWORD,
+// } = process.env;
+
+export const knexConfig = require('./knexfile')[process.env.NODE_ENV ?? 'development'];
 
 export default { API_PORT, SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_KEY };

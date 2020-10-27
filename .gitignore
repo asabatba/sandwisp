@@ -5,3 +5,4 @@ untracked
 
 .env
 testing.rest
+dev.sqlite3
