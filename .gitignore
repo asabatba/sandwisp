@@ -4,3 +4,4 @@ dist
 untracked
 
 .env
+testing.rest
