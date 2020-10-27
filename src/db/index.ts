@@ -1,7 +1,6 @@
 
 
-import { Pool, QueryResult } from 'pg';
-import _ from 'lodash';
+import { Pool } from 'pg';
 
 const pool = new Pool();
 

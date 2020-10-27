@@ -29,10 +29,7 @@ async function getAlbumSections(req: Request, res: Response, next: NextFunction)
     try {
         await loadAlbum(aid);
     } catch (err) {
-        // console.error(err);
-        // console.error(err.response.data);
         return next(err);
-        // return res.status(500).send({ error: err.message });
     }
 
     const sections = await loadAlbumSections(aid);

@@ -19,7 +19,7 @@ export async function playlistTrackIdsInDatabase(playlistId: string) {
 }
 
 
-export async function insertPlaylistTracks(playlistId: string, playlistTracks: { track: { id: string }, added_at: Date | string }[]) {
+export async function insertPlaylistTracks(playlistId: string, playlistTracks: { track: { id: string; }, added_at: Date | string; }[]) {
 
     const promises = playlistTracks.map((ptrack, idx) => {
         return pool.query('insert into sandwisp.playlist_tracks (id, track_id, track_order, added_at) values ($1,$2,$3,$4) on conflict (id,track_id) do update set track_order = excluded.track_order, added_at = excluded.added_at',

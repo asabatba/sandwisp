@@ -47,7 +47,7 @@ export const getAlbumData = async (aid: string) => {
 
     if (!albumColors) {
 
-        const smallestImgUrl = album.images.reduce((acc: { height: number }, img: { height: number }) => img.height < acc.height ? img : acc, { height: Infinity }).url;
+        const smallestImgUrl = album.images.reduce((acc: { height: number; }, img: { height: number; }) => img.height < acc.height ? img : acc, { height: Infinity }).url;
         console.log(smallestImgUrl);
         albumColors = await retrieveAndSaveColors('album', aid, smallestImgUrl);
     }
