@@ -5,6 +5,7 @@
   "main": "dist/receiver.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
     "dev": "tsc -w",
     "watch": "tsc -w",
     "nodemon": "nodemon -w dist",
@@ -14,16 +15,16 @@
   "author": "arsaba",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.0",
     "body-parser": "^1.19.0",
     "chroma-js": "^2.1.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-slow-down": "^1.3.1",
-    "lodash": "^4.17.15",
-    "pg": "^8.2.1",
-    "ramda": "^0.27.0",
+    "lodash": "^4.17.20",
+    "pg": "^8.4.2",
+    "ramda": "^0.27.1",
     "sharp": "^0.25.4"
   },
   "devDependencies": {
@@ -38,8 +39,8 @@
     "@types/sharp": "^0.25.0",
     "@typescript-eslint/eslint-plugin": "^3.0.1",
     "@typescript-eslint/parser": "^3.0.1",
-    "esbuild": "^0.3.9",
+    "esbuild": "^0.7.21",
     "eslint": "^7.1.0",
-    "typescript": "^3.9.3"
+    "typescript": "^4.0.5"
   }
 }

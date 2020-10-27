@@ -3,7 +3,6 @@ import { AxiosError } from 'axios';
 import cors from 'cors';
 import express, { NextFunction, Request, Response } from 'express';
 import slowDown from 'express-slow-down';
-import { readFileSync } from 'fs';
 import http from 'http';
 import { API_PORT } from './config';
 import albumsRouter from './controllers/albums';
@@ -29,14 +28,14 @@ app.use('/api/search', searchRouter);
 app.use('/api/colors', colorsRouter);
 
 (() => {
-    let key, cert;
-    try {
-        key = readFileSync(process.env.SERVER_KEY, 'utf8');
-        cert = readFileSync(process.env.SERVER_CERT, 'utf8');
-    } catch (err) {
-        console.error(err);
-        return;
-    }
+    // let key, cert;
+    // try {
+    //     key = readFileSync(process.env.SERVER_KEY, 'utf8');
+    //     cert = readFileSync(process.env.SERVER_CERT, 'utf8');
+    // } catch (err) {
+    //     console.error(err);
+    //     return;
+    // }
 
     const httpServer = http.createServer(app);
     httpServer.listen(API_PORT);
