@@ -1,2 +1,2 @@
 
-module.exports = require('./src/knexfile');
+module.exports = require('./dist/knexfile');

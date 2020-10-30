@@ -1,6 +1,10 @@
 // Update with your config settings.
 
-module.exports = {
+import { config } from 'dotenv';
+
+config();
+
+export default {
 
   development: {
     client: 'sqlite3',
