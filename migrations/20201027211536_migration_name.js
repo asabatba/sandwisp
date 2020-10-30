@@ -1,6 +1,6 @@
 
 exports.up = function (knex) {
-    return knex.schema.createSchema('sandwisp')
+    return knex.schema.withSchema('sandwisp')
         .createTable('album_tracks', (table) => {
             table.string('id').notNullable();
             table.string('track_id').notNullable();
