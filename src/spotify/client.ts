@@ -1,6 +1,6 @@
 
 import axios from 'axios';
-import _ from 'lodash';
+import R from 'ramda';
 import config from '../config';
 
 export class SpotifyClient {
@@ -49,7 +49,8 @@ export class SpotifyClient {
     // not completed
     async getAllTracks(idList: string[]) {
         const allTracks = [];
-        const chunks = _.chunk(idList, 50);
+        const chunks = R.splitEvery(50, idList);
+
         for (const chunk of chunks) {
             const response = await this.getTracks(chunk);
             allTracks.push(...response.tracks);
@@ -87,7 +88,7 @@ export class SpotifyClient {
 
     async getAllAudioFeatures(idList: string[]) {
         const allTracks = [];
-        const chunks = _.chunk(idList, 50);
+        const chunks = R.splitEvery(50, idList);
         for (const chunk of chunks) {
             const response = await this.getAudioFeatures(chunk);
             allTracks.push(...response.audio_features);
