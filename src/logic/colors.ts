@@ -106,10 +106,7 @@ function hsvDistance(c1: Color, c2: Color) {
 
     const [h1, s1, v1] = rgb2hsv(c1);
     const [h2, s2, v2] = rgb2hsv(c2);
-    // const rhos = c1[1] ** 2 + c2[1] ** 2;
-    // const angles = -2 * c1[1] * c2[1] * (Math.cos(c1[0]/(Math.PI*2)) * Math.cos(c2[0]/(Math.PI*2)) + Math.sin(c1[0]/(Math.PI*2)) * Math.sin(c2[0]/(Math.PI*2)));
-    // const rs = (c1[2] - c1[2]) ** 2;
-    // return Math.sqrt(rhos + angles + rs);
+
     return Math.sqrt((Math.sin(h1 * Math.PI / (180) / 2) - Math.sin(h2 * Math.PI / (180) / 2)) ** 2 + (s1 - s2) ** 2 + (v1 - v2) ** 2);
 }
 
@@ -131,17 +128,12 @@ function kmeans(array: Color[]) {
     const clusterDiff = [];
     const clusterMap: number[] = [];
 
-    // const clusterDistances: number[] = [];
-
-    // let worstDistanceScore = Infinity;
-
     // randomize clusters
     for (let i = 0; i < numClusters; i++) {
         clusters[i] = rngColor();
         oldClusters[i] = [-1, -1, -1];
     }
 
-    // console.log(clusters);
     for (let j = 0; j < iterations; j++) {
 
         // compute closest cluster
@@ -178,36 +170,9 @@ function kmeans(array: Color[]) {
         }
 
         if (Math.max(...clusterDiff) < 1) {
-            // console.log('done!');
             break;
         }
-
-        // compute distances between clusters
-        // and discard the one with worst score
-        // {
-        //     for (let x = 0; x < numClusters; x++) {
-        //         clusterDistances[x] = clusters
-        //             .reduce((acc, v) => acc + labDistance(v, clusters[x]), 0);
-        //     }
-        //     console.log(clusterDistances, indexOfMinValue(clusterDistances), worstDistanceScore);
-        //     const indexOfMin = indexOfMinValue(clusterDistances);
-        //     const minValue = clusterDistances[indexOfMin];
-        //     if (minValue < worstDistanceScore) {
-        //         clusters[indexOfMin] = rngColor();
-        //         worstDistanceScore = minValue;
-        //     }
-        // }
-
-
-        // if (j % (iterations / 10 >> 0) === 0) {
-        //     console.log(clusters);
-        // }
     }
-
-    // reorder from most to least used
-    // const newOrder = clustersByUsage(clusterMap);
-
-    // const bestClusters = keepBestClusters(clusters, Math.ceil(numClusters / 2));
 
     let bestClusters = deleteWorstCluster(clusters);
     while (bestClusters.length > Math.ceil(numClusters / 2)) {
@@ -217,9 +182,6 @@ function kmeans(array: Color[]) {
     // Sort from darker to lighter
     bestClusters.sort((a, b) => chroma.rgb(a[0], a[1], a[2]).get('lab.l') - chroma(b[0], b[1], b[2]).get('lab.l'));
 
-    // console.log(clusters, clusters.map((v, idx, arr) => arr[newOrder[idx]]))
-
-    // return clusters.map((v, idx, arr) => arr[newOrder[idx]]);
     return bestClusters;
 }
 
@@ -251,7 +213,6 @@ function keepBestClusters(clusters: number[][], numToKeep: number) {
 
     ordClusters.sort((a, b) => - a[1] + b[1]);
 
-    // console.log(ordClusters);
     return ordClusters.slice(0, numToKeep).map(c => c[0]);
 }
 

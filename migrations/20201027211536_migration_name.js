@@ -1,6 +1,6 @@
 
 exports.up = function (knex) {
-    return knex.schema.withSchema('sandwisp')
+    return knex.schema//.withSchema('sandwisp')
         .createTable('album_tracks', (table) => {
             table.string('id').notNullable();
             table.string('track_id').notNullable();
@@ -42,7 +42,7 @@ exports.up = function (knex) {
 };
 
 exports.down = function (knex) {
-    return knex.schema.withSchema('sandwisp')
+    return knex.schema//.withSchema('sandwisp')
         .dropTable('album_tracks')
         .dropTable('audio_analysis')
         .dropTable('audio_features')

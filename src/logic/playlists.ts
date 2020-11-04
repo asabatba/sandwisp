@@ -1,7 +1,5 @@
 
 
-// loadPlaylist, loadPlaylistSections
-
 import { insertPlaylistTracks, loadAudioAnalysisSectionsOfPlaylist, playlistTrackIdsInDatabase } from '../db/playlists';
 import { SpotifyClient } from '../spotify/client';
 import { retrieveAndSaveAllTracksToDatabase } from './tracks';
