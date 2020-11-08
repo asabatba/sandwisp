@@ -15,6 +15,7 @@
   "author": "arsaba",
   "license": "ISC",
   "dependencies": {
+    "@hqoss/monads": "^0.4.0",
     "axios": "^0.21.0",
     "body-parser": "^1.19.0",
     "chroma-js": "^2.1.0",
@@ -41,6 +42,7 @@
     "@typescript-eslint/parser": "^3.0.1",
     "esbuild": "^0.8.0",
     "eslint": "^7.12.1",
+    "nodemon": "^2.0.6",
     "sqlite3": "^5.0.0",
     "typescript": "^4.0.5"
   }

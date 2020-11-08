@@ -1,7 +1,24 @@
 
-import axios from 'axios';
+import { Err, Ok, Result } from '@hqoss/monads';
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { TaskEither, tryCatch } from 'fp-ts/lib/TaskEither';
 import R from 'ramda';
 import config from '../config';
+
+// const axiosGet = (url: string, config?: AxiosRequestConfig): FutureInstance<AxiosError, AxiosResponse> =>
+//     Future((rej, res) => {
+
+//         const source = axios.CancelToken.source();
+//         axios.get(url, { ...config, cancelToken: source.token, })
+//             .then(res, rej);
+//         return source.cancel;
+//     });
+
+const axiosGet = (url: string, config?: AxiosRequestConfig): TaskEither<AxiosError, AxiosResponse> =>
+    tryCatch(
+        () => axios.get(url, config),
+        err => err as AxiosError,
+    );
 
 export class SpotifyClient {
 
@@ -15,16 +32,47 @@ export class SpotifyClient {
     constructor() {
     }
 
-    async connect() {
-        const response = await axios.post(`${this.accountsUrl}/api/token`,
-            'grant_type=client_credentials'
-            , {
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': `Basic ${this.clientKey}`
-                }
-            });
-        this.accessToken = response.data.access_token;
+    // connect() {
+
+    //     return Future((rej, res) => {
+
+    //         axios.post(`${this.accountsUrl}/api/token`,
+    //             'grant_type=client_credentials'
+    //             , {
+    //                 headers: {
+    //                     'Content-Type': 'application/x-www-form-urlencoded',
+    //                     'Authorization': `Basic ${Buffer.from(this.clientId + ':' + this.clientKey).toString('base64')}`,
+    //                 }
+    //             }).then((response) => {
+
+    //                 this.accessToken = response.data.access_token;
+    //                 res(this);
+    //             }).catch(err => {
+    //                 rej(err);
+    //             });
+
+    //         // return Ok(null);
+    //         return () => { };
+    //     });
+    // }
+
+    async connect(): Promise<Result<void, AxiosError>> {
+
+        try {
+            const response = await axios.post(`${this.accountsUrl}/api/token`,
+                'grant_type=client_credentials'
+                , {
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorization': `Basic ${Buffer.from(this.clientId + ':' + this.clientKey).toString('base64')}`,
+                    }
+                });
+            this.accessToken = response.data.access_token;
+
+        } catch (err) {
+            return Err(err);
+        }
+        return Ok(null);
     }
 
     async authorize() {
@@ -154,19 +202,32 @@ export class SpotifyClient {
         return allItems.filter(t => t.track.type === 'track' && !t.track.is_local);
     }
 
-    async getAlbum(albumId: string) {
-        const response = await axios.get(`${this.apiUrl}/v1/albums/${albumId}`, {
-            headers: { 'Authorization': `Bearer ${this.accessToken}` },
-        });
+    async getAlbum(albumId: string): Promise<Result<any, AxiosError>> {
 
-        return response.data;
+        let response;
+        try {
+            response = await axios.get(`${this.apiUrl}/v1/albums/${albumId}`, {
+                headers: { 'Authorization': `Bearer ${this.accessToken}` },
+            });
+        } catch (err) {
+
+            return Err(err);
+        }
+        return Ok(response.data);
     }
 
-    async getAlbumTracks(albumId: string) {
+    async getAlbumTracks(albumId: string): Promise<Result<any[], AxiosError>> {
         const allItems = [];
-        let response = await axios.get(`${this.apiUrl}/v1/albums/${albumId}/tracks`, {
-            headers: { 'Authorization': `Bearer ${this.accessToken}` },
-        });
+
+        let response;
+        try {
+            response = await axios.get(`${this.apiUrl}/v1/albums/${albumId}/tracks`, {
+                headers: { 'Authorization': `Bearer ${this.accessToken}` },
+            });
+        } catch (err) {
+            return err;
+        }
+
         allItems.push(...response.data.items);
 
         while (response.data.next) {
@@ -175,7 +236,7 @@ export class SpotifyClient {
             });
             allItems.push(...response.data.items);
         }
-        return allItems.filter(t => t.type === 'track');
+        return Ok(allItems.filter(t => t.type === 'track'));
     }
 
     async search(q: string, types: SpotifyObjectType[], limit: number) {

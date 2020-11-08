@@ -1,13 +1,15 @@
 
-
+import { Err, Ok, Result } from '@hqoss/monads';
 import { insertTrackAudioAnalysis, insertTrackAudioFeatures, insertTrackInfo } from '../db/tracks';
 import { SpotifyClient } from '../spotify/client';
 
-
-export async function retrieveAndSaveAllTracksToDatabase(trackIds: string[]) {
+export async function retrieveAndSaveAllTracksToDatabase(trackIds: string[]): Promise<Result<void, string>> {
 
     const spoti = new SpotifyClient();
-    await spoti.connect();
+    const connRes = (await spoti.connect());
+    if (connRes.isErr()) {
+        return Err(connRes.unwrapErr().message);
+    }
 
     const allTracks = await spoti.getAllTracks(trackIds);
     const allAudioFeatures = await spoti.getAllAudioFeatures(trackIds);
@@ -34,4 +36,6 @@ export async function retrieveAndSaveAllTracksToDatabase(trackIds: string[]) {
             console.error('Error on audio_analysis insert.', err);
         }
     }
+
+    return Ok(null);
 }

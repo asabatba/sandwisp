@@ -15,7 +15,11 @@ async function getAlbum(req: Request, res: Response, next: NextFunction) {
         return res.status(400).send({ error: 'Missing/null albumId' });
     }
     const data = await getAlbumData(aid);
-    return res.status(200).send(data);
+    data.match({
+        ok: albumsData => res.status(200).send(albumsData),
+        err: err => res.status(404).send({ details: err }),
+    });
+    return;
 }
 
 async function getAlbumSections(req: Request, res: Response, next: NextFunction) {
