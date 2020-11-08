@@ -1,7 +1,6 @@
 
 import { Err, Ok, Result } from '@hqoss/monads';
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { TaskEither, tryCatch } from 'fp-ts/lib/TaskEither';
+import axios, { AxiosError } from 'axios';
 import R from 'ramda';
 import config from '../config';
 
@@ -14,11 +13,11 @@ import config from '../config';
 //         return source.cancel;
 //     });
 
-const axiosGet = (url: string, config?: AxiosRequestConfig): TaskEither<AxiosError, AxiosResponse> =>
-    tryCatch(
-        () => axios.get(url, config),
-        err => err as AxiosError,
-    );
+// const axiosGet = (url: string, config?: AxiosRequestConfig): TaskEither<AxiosError, AxiosResponse> =>
+//     tryCatch(
+//         () => axios.get(url, config),
+//         err => err as AxiosError,
+//     );
 
 export class SpotifyClient {
 
