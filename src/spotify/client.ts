@@ -165,18 +165,16 @@ export class SpotifyClient {
 
     async getUserTracks() {
         const allItems = [];
-        let response = await axios.get(`${this.apiUrl}/v1/me/tracks`, {
+
+        const axiosGen = axiosGetGen(`${this.apiUrl}/v1/me/tracks`, {
             headers: { 'Authorization': `Bearer ${this.userToken}` },
             params: { limit: 50 }
         });
-        allItems.push(...response.data.items);
 
-        while (response.data.next) {
-            response = await axios.get(response.data.next, {
-                headers: { 'Authorization': `Bearer ${this.userToken}` }
-            });
-            allItems.push(...response.data.items);
+        for await (const data of axiosGen) {
+            allItems.push(...data.items);
         }
+
         return allItems;
     }
 
@@ -191,18 +189,13 @@ export class SpotifyClient {
 
         // att: [fields] has to contain 'next' and 'items.track.type' if it exists
         const allItems = [];
-        let response = await axios.get(`${this.apiUrl}/v1/playlists/${playlistId}/tracks`, {
+
+        const axiosGen = axiosGetGen(`${this.apiUrl}/v1/playlists/${playlistId}/tracks`, {
             headers: { 'Authorization': `Bearer ${this.accessToken}` },
             params: fields ? { fields: fields } : undefined
         });
-        allItems.push(...response.data.items);
-
-        while (response.data.next) {
-            response = await axios.get(response.data.next, {
-                headers: { 'Authorization': `Bearer ${this.accessToken}` },
-                params: fields ? { fields: fields } : undefined
-            });
-            allItems.push(...response.data.items);
+        for await (const data of axiosGen) {
+            allItems.push(...data.items);
         }
 
         /**
