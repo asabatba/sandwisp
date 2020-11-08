@@ -1,6 +1,6 @@
 
 import { Err, Ok, Result } from '@hqoss/monads';
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import R from 'ramda';
 import config from '../config';
 
@@ -18,6 +18,16 @@ import config from '../config';
 //         () => axios.get(url, config),
 //         err => err as AxiosError,
 //     );
+
+async function* axiosGetGen(_url: string, config?: AxiosRequestConfig) {
+
+    let response, url = _url;
+    do {
+        response = await axios.get(url, config);
+        yield response.data;
+        url = response.data.next;
+    } while (url);
+}
 
 export class SpotifyClient {
 
@@ -215,26 +225,17 @@ export class SpotifyClient {
         return Ok(response.data);
     }
 
+
     async getAlbumTracks(albumId: string): Promise<Result<any[], AxiosError>> {
         const allItems = [];
 
-        let response;
-        try {
-            response = await axios.get(`${this.apiUrl}/v1/albums/${albumId}/tracks`, {
-                headers: { 'Authorization': `Bearer ${this.accessToken}` },
-            });
-        } catch (err) {
-            return err;
+        const genFun = axiosGetGen(`${this.apiUrl}/v1/albums/${albumId}/tracks`,
+            { headers: { 'Authorization': `Bearer ${this.accessToken}` } });
+
+        for await (const data of genFun) {
+            allItems.push(...data.items);
         }
 
-        allItems.push(...response.data.items);
-
-        while (response.data.next) {
-            response = await axios.get(response.data.next, {
-                headers: { 'Authorization': `Bearer ${this.accessToken}` }
-            });
-            allItems.push(...response.data.items);
-        }
         return Ok(allItems.filter(t => t.type === 'track'));
     }
 
