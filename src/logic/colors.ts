@@ -1,10 +1,10 @@
-
 import Axios from 'axios';
 import chroma from 'chroma-js';
 import R from 'ramda';
 import sharp from 'sharp';
 import { setColorsOf } from '../db/colors';
 import { Color, imagePreproc } from './colors_utils';
+
 
 export async function retrieveAndSaveColors(type: 'album' | 'playlist', id: string, url: string) {
 
@@ -62,7 +62,7 @@ function rgb2hsv_ko(c: Color) {
 function rgb2hsv(c: Color) {
 
     const r = c[0], g = c[1], b = c[2];
-    let rr, gg, bb, h, s;
+    let rr: number, gg: number, bb: number, h: number, s: number;
     const rabs = r / 255;
     const gabs = g / 255;
     const babs = b / 255;
@@ -84,6 +84,8 @@ function rgb2hsv(c: Color) {
             h = (1 / 3) + rr - bb;
         } else if (babs === v) {
             h = (2 / 3) + gg - rr;
+        } else {
+            h = 0;
         }
         if (h < 0) {
             h += 1;
@@ -150,7 +152,7 @@ function kmeans(array: Color[]) {
             const distances = clusters.map(cl => labDistance(pixel, cl));
             const closest = distances.reduce(
                 (acc, v, idx) => (v < acc.value) ? { value: v, index: idx } : acc,
-                { value: Infinity, index: null }
+                { value: Infinity, index: 0 },
             );
             clusterMap[i] = closest.index;
         }
@@ -254,4 +256,3 @@ function keepBestClusters(clusters: number[][], numToKeep: number) {
     // console.log(ordClusters);
     return ordClusters.slice(0, numToKeep).map(c => c[0]);
 }
-

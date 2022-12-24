@@ -1,7 +1,7 @@
-
 import axios from 'axios';
 import _ from 'lodash';
 import config from '../config';
+
 
 export class SpotifyClient {
 
@@ -10,7 +10,7 @@ export class SpotifyClient {
     userToken = 'userTokenHere';
     clientId = config.SPOTIFY_CLIENT_ID;
     clientKey = config.SPOTIFY_CLIENT_KEY;
-    accessToken: string;
+    accessToken?: string;
 
     constructor() {
     }
