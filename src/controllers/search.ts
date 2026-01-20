@@ -1,6 +1,7 @@
 
 import { NextFunction, Request, Response, Router } from 'express';
 import { searchAlbum, searchPlaylist } from '../logic/search';
+import { firstParam } from './params';
 
 
 const searchRouter = Router();
@@ -11,7 +12,7 @@ searchRouter.get('/playlists/:q', searchPlaylists);
 
 async function checkQuery(req: Request, res: Response, next: NextFunction) {
 
-    const query = req.params['q'];
+    const query = firstParam(req.params['q']);
     console.log(req.params);
 
     if (!query) {
@@ -23,7 +24,10 @@ async function checkQuery(req: Request, res: Response, next: NextFunction) {
 
 async function searchAlbums(req: Request, res: Response, next: NextFunction) {
 
-    const query = req.params['q'];
+    const query = firstParam(req.params['q']);
+    if (!query) {
+        return res.status(400).send({ error: 'Missing/null search query' });
+    }
 
     let results;
     try {
@@ -37,7 +41,10 @@ async function searchAlbums(req: Request, res: Response, next: NextFunction) {
 
 async function searchPlaylists(req: Request, res: Response, next: NextFunction) {
 
-    const query = req.params['q'];
+    const query = firstParam(req.params['q']);
+    if (!query) {
+        return res.status(400).send({ error: 'Missing/null search query' });
+    }
 
     let results;
     try {

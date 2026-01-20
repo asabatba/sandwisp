@@ -1,6 +1,7 @@
 
 import { NextFunction, Request, Response, Router } from 'express';
 import { getPlaylistData, loadPlaylist, loadPlaylistSections } from '../logic/playlists';
+import { firstParam } from './params';
 
 
 const playlistsRouter = Router();
@@ -9,7 +10,7 @@ playlistsRouter.get('/:pid', getPlaylist);
 playlistsRouter.get('/:pid/sections', getPlaylistSections);
 
 async function getPlaylist(req: Request, res: Response, next: NextFunction) {
-    const pid = req.params['pid']?.replace(/[\W]+/g, '');
+    const pid = firstParam(req.params['pid'])?.replace(/[\W]+/g, '');
 
     if (!pid) {
         return res.status(400).send({ error: 'Missing/null playlistId' });
@@ -20,7 +21,7 @@ async function getPlaylist(req: Request, res: Response, next: NextFunction) {
 
 async function getPlaylistSections(req: Request, res: Response, next: NextFunction) {
 
-    const pid = req.params['pid']?.replace(/[\W]+/g, '');
+    const pid = firstParam(req.params['pid'])?.replace(/[\W]+/g, '');
 
     if (!pid) {
         return res.status(400).send({ error: 'Missing/null playlistId' });
